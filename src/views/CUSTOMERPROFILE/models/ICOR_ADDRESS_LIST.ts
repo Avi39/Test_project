@@ -1,6 +1,7 @@
 import type ModelBase from '@/commonModels/ModelBase';
 
 export default interface ICOR_ADDRESS_LIST extends ModelBase{
+    ADDRESS_ID?:string;
     ADDRESS_TYPE?: string;
     ADDRESS ?: string;
     CITY ?: string;

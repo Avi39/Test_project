@@ -24,4 +24,5 @@ export default interface ICOR_CUSTOMER_INFO extends ModelBase{
     MAKE_DATE?: string;
     INTRODUCER?: ICOR_INTRODUCER_INFO; 
     ADDRESS?: ICOR_ADDRESS_LIST[];
+    // ADDRESS?: Array<ICOR_ADDRESS_LIST>
 }

@@ -2,7 +2,7 @@
     <BaseHeader class="position-css" :title="'Customer'" :is-four-button="true" :button1="'OK'" :button2="'View'"
         :button3="'Refresh'" :button4="'Exit'" @onSubmitFromChildren="OnSubmit" @onViewFromChildren="OnDecline"
         @onRefreshFromChildren="OnRefresh" @onExitFromChildren="OnExit" />
-    <br />  
+    <br />
     <br />
     <v-container class="custprofile_details_header">
         <p>Customer Profile Details</p>
@@ -56,14 +56,14 @@
 
                                 <v-col cols="12" md="2">
                                     <v-autocomplete v-model="objCusInfo.MARITAL_STATUS" :items="maritals"
-                                     label="Marital" item-value="value" item-title="label"></v-autocomplete>
+                                        label="Marital" item-value="value" item-title="label"></v-autocomplete>
                                 </v-col>
                             </v-row>
                             <br>
                             <v-row>
                                 <v-col cols="12" md="5">
                                     <v-text-field v-model="objCusInfo.SPOUSE_NAME" :counter="10" label="Spouse Name"
-                                    :disabled="isSpouseNameDisabled"  hide-details required></v-text-field>
+                                        :disabled="isSpouseNameDisabled" hide-details required></v-text-field>
                                 </v-col>
 
                                 <v-col cols="12" md="5">
@@ -212,7 +212,7 @@
     </v-container>
 </template>
 <script setup lang="ts">
-import { ref,computed } from 'vue';
+import { ref, computed } from 'vue';
 
 import BaseHeader from '@/components/shared/BaseHeader.vue';
 import rules from '@/mixins/rules';
@@ -237,7 +237,7 @@ let CountryList = ref<any[]>([]);
 let DivisionList = ref<any[]>([]);
 let DistrictList = ref<any[]>([]);
 let ThanaList = ref<any[]>([]);
-
+// let addressForUpdate=ref([]as any);
 let isEditMode = ref(false);
 let editIndex = ref(null);
 
@@ -294,21 +294,36 @@ async function addAddress() {
     console.log('objAddressList on add button', objAddressList)
 
     await matchCountry_NM(objAddressList)
+    console.log('country get');
     await matchDivision_NM(objAddressList)
-    await matchDistrict_NM(objAddressList)
-    await matchThana_NM(objAddressList)
+    console.log('division get');
+    await matchDistrict_NM(objAddressList);
+    console.log('district get');
+    await matchThana_NM(objAddressList);
+    console.log('thana get');
 
     const existingAddress = tableItems.value.find(item => item.ADDRESS_TYPE === objAddressList.ADDRESS_TYPE);
 
-    if (existingAddress) {
-        toast.error(`An address of type ${objAddressList.ADDRESS_TYPE} already exists.`);
-        return;
-    }
+    // if (!isEditMode.value) {
+        if (existingAddress) {
+            toast.error(`An address of type ${objAddressList.ADDRESS_TYPE} already exists.`);
+            return;
+        }
 
-    if (tableItems.value.length >= 2) {
-        toast.error('You can only add two addresses: one Present and one Permanent.');
-        return;
-    }
+        // if (tableItems.value.length >= 2) {
+        //     toast.error('You can only add two addresses: one Present and one Permanent.');
+        //     return;
+        // }
+
+        // else {
+        //     // If in edit mode, allow updating the existing address but prevent duplicate types
+        //     if (existingAddress && existingAddress !== tableItems.value[editIndex.value]) {
+        //         toast.error(`An address of type ${objAddressList.ADDRESS_TYPE} already exists.`);
+        //         return;
+        //     }
+        // }
+    // }
+
 
 
 
@@ -318,20 +333,24 @@ async function addAddress() {
     if (isEditMode.value == true) {
         tableItems.value[editIndex.value] = tempAddress;
         console.log(tableItems.value[editIndex.value]);
+        // addressForUpdate.value.push(tempAddress);
     }
     else {
         tableItems.value.push(tempAddress);
+
     }
+    await clear();
 
     console.log('table Item: ', tableItems);
-    await clear();
+
     console.log('table Item2: ', tableItems);
-    isEditMode.value = false;
+    // isEditMode.value = false;
     // editIndex.value = null; 
 }
 
 async function EditButtonClick(item, index) {
-
+    // debugger
+    isEditMode.value = true;
     item.COUNTRY_ID = item.COUNTRY
     item.DIVISION_ID = item.DIVISION
     item.DISTRICT_ID = item.DISTRICT
@@ -339,7 +358,7 @@ async function EditButtonClick(item, index) {
 
     console.log('item', item);
     console.log(index);
-    //  objAddressList = {...item};
+    //   objAddressList = {...item};
     objAddressList.ADDRESS_TYPE = item.ADDRESS_TYPE;
     objAddressList.ADDRESS = item.ADDRESS;
     objAddressList.CITY = item.CITY;
@@ -352,8 +371,32 @@ async function EditButtonClick(item, index) {
     objAddressList.MOBILE_NO = item.MOBILE_NO;
     objAddressList.EMAIL = item.EMAIL;
 
-    isEditMode.value = true;
+     isEditMode.value = true;
     editIndex.value = index;
+
+    item.ADDRESS_TYPE = '';
+    item.ADDRESS = '';
+    item.CITY = '';
+    item.ZIP = '';
+    item.COUNTRY_ID = '';
+    item.DIVISION_ID = '';
+    item.DISTRICT_ID = '';
+    item.THANA_ID = '';
+    item.PHONE_NO = '';
+    item.MOBILE_NO = '';
+    item.EMAIL = '';
+    // objAddressList.isAdd = false;
+    // objAddressList.isOld = true;
+    // objAddressList.CloneObj = { ...item.CloneObj };
+    console.log("CloneObj = ", objAddressList.CloneObj);
+    
+   
+    // const existingAddress = tableItems.value.find(item => item.ADDRESS_TYPE === objAddressList.ADDRESS_TYPE);
+    // if (existingAddress && existingAddress == tableItems.value[editIndex.value]) {
+    //         toast.error(`An address of type ${objAddressList.ADDRESS_TYPE} already exists.`);
+    //         return;
+    //     }
+
 }
 
 const sample_headers = ref<any[]>([{ text: 'Credit Line', value: 'CREDIT_LINE_NM' }]);
@@ -366,7 +409,7 @@ let introducers = [
 
     {
         label: 'Bank Employee with P.A. No',
-        value: 'Unmarried'
+        value: 'Bank Employee with P.A. No'
     },
     {
         label: 'Peoples Representative',
@@ -447,12 +490,16 @@ async function test() {
 }
 async function OnSubmit() {
 
+    
+    //console.log(objCusInfo);
+    // debugger;
 
     objCusInfo.INTRODUCER = { ...objIntroInfo };
     objCusInfo.ADDRESS = tableItems.value;
     objCusInfo.MAKE_BY = store.getters.getUserId;
     objCusInfo.INTRODUCER.MAKE_BY = store.getters.getUserId;
     console.log('intro: ', objCusInfo);
+    console.log(objAddressList.CloneObj);
 
     for (let element of objCusInfo.ADDRESS) {
         element.COUNTRY_ID = element.COUNTRY
@@ -474,7 +521,7 @@ async function OnSubmit() {
 async function CountryGet() {
     await customer_service.CountryGet().then((res: any) => {
         CountryList.value = res;
-        console.log(CountryList.value);
+        //console.log(CountryList.value);
     });
 }
 async function Page_Load() {
@@ -485,7 +532,7 @@ async function DivisionGet(Country_ID) {
     // console.log(objAddressList.value.COUNTRY);
     await customer_service.DivisionGet(Country_ID).then((res: any) => {
         DivisionList.value = res;
-        console.log(DivisionList.value);
+        //console.log(DivisionList.value);
     });
 
 
@@ -495,8 +542,8 @@ async function DivisionGet(Country_ID) {
 async function DistrictGet(Division_Id) {
     await customer_service.DistrictGet(Division_Id).then((res: any) => {
         DistrictList.value = res;
-        console.log(DistrictList.value);
-        console.log(DistrictList);
+        //console.log(DistrictList.value);
+        //console.log(DistrictList);
     });
 
 
@@ -505,8 +552,8 @@ async function DistrictGet(Division_Id) {
 async function ThanaGet(District_Id) {
     await customer_service.ThanaGet(District_Id).then((res: any) => {
         ThanaList.value = res;
-        console.log(ThanaList.value);
-        console.log(ThanaList);
+        //console.log(ThanaList.value);
+        //console.log(ThanaList);
     });
 
 }
@@ -597,21 +644,32 @@ async function ByCustomerId(customer_id) {
             for (let element of res.ADDRESS) {
 
                 // debugger;
-
+                console.log('Getting Address');
 
 
                 await matchCountry_NM(element)
+                console.log('Getting Dividion');
                 await matchDivision_NM(element)
+                console.log('Getting District');
                 await matchDistrict_NM(element)
+                console.log('Getting Thana');
                 await matchThana_NM(element)
+
+                console.log('Address Got successfully');
                 element.COUNTRY_ID = element.COUNTRY
-                element.CloneObj = {...element}
+                // element.CloneObj = { ...element }
+                objAddressList.CloneObj = {...element}
+                objAddressList.isAdd = false;
+                objAddressList.isOld = true;
+                console.log(objAddressList);
                 // element.CloneObj.oldValue = { ...element }
                 // element.CloneObj.newValue = { ...element }
-                element.isAdd = false
-                element.isOld = true
-                element.isDelete = false
+                // element.isAdd = false
+                // element.isOld = true
+                // element.isDelete = false
             }
+
+            tableItems.value  = res.ADDRESS;
 
             // if (element.isOld = true) {
             //     const originalData = tableItems.value[index].CloneObj;
@@ -623,10 +681,24 @@ async function ByCustomerId(customer_id) {
 
 
 
-            tableItems.value = res.ADDRESS;
+            // tableItems.value = res.ADDRESS;
+
+            // objCusInfo.ADDRESS = res.ADDRESS;
+
+            // for (let i of res.ADDRESS) {
+            //     debugger
+            //     i.CloneObj = { ...i };
+            // }
 
 
-            console.log('table items on fetch', tableItems.value)
+            // tableItems.value.forEach((e) => {
+            //     debugger
+            //     if (!commonMethod.stringIsEmptyOrNullCheck(e.ADDRESS_ID)) {
+            //         e.isAdd = false;
+            //         e.isOld = true;
+            //     }
+            // });
+            // console.log('table items on fetch', tableItems.value)
 
 
 
