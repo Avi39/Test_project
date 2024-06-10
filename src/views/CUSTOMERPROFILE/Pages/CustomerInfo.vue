@@ -17,7 +17,7 @@
                             <v-row>
                                 <v-col cols="12" md="5">
                                     <v-text-field v-model="objCusInfo.CUSTOMER_ID" :counter="10" label="Customer ID"
-                                        hide-details required
+                                        hide-details 
                                         @blur="ByCustomerId(objCusInfo.CUSTOMER_ID)"></v-text-field>
                                 </v-col>
                             </v-row>
@@ -45,7 +45,7 @@
 
                                 <v-col cols="12" md="3">
                                     <v-autocomplete v-model="objCusInfo.GENDER" :items="genders" label="Gender"
-                                        item-value="value" item-title="label"></v-autocomplete>
+                                        item-value="value" item-title="label" required></v-autocomplete>
                                 </v-col>
 
                                 <v-col cols="12" md="3">
@@ -56,19 +56,19 @@
 
                                 <v-col cols="12" md="2">
                                     <v-autocomplete v-model="objCusInfo.MARITAL_STATUS" :items="maritals"
-                                        label="Marital" item-value="value" item-title="label"></v-autocomplete>
+                                        label="Marital" item-value="value" item-title="label" @update:modelValue="onMaritalStatusChange" required></v-autocomplete>
                                 </v-col>
                             </v-row>
                             <br>
                             <v-row>
                                 <v-col cols="12" md="5">
                                     <v-text-field v-model="objCusInfo.SPOUSE_NAME" :counter="10" label="Spouse Name"
-                                        :disabled="isSpouseNameDisabled" hide-details required></v-text-field>
+                                        :disabled="isSpouseNameDisabled" hide-details ></v-text-field>
                                 </v-col>
 
                                 <v-col cols="12" md="5">
                                     <v-text-field v-model="objCusInfo.NID" :counter="10" label="NID" hide-details
-                                        required></v-text-field>
+                                        required :error-messages="nidError" @input="validateNID" v-on:keypress="[rules.isDecimal($event)]"></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -100,7 +100,7 @@
 
                                         <v-col cols="12" md="4">
                                             <v-text-field v-model="objIntroInfo.INTRODUCER_ACC_NO"
-                                                label="Introducer Acc No" hide-details required></v-text-field>
+                                                label="Introducer Acc No" hide-details ></v-text-field>
                                         </v-col>
                                     </v-row>
 
@@ -109,7 +109,7 @@
                                     <v-row>
                                         <v-col cols="12" md="5">
                                             <v-text-field v-model="objIntroInfo.INTRODUCER_DETAILS" :counter="10"
-                                                label="Introducer Details" hide-details required></v-text-field>
+                                                label="Introducer Details" hide-details ></v-text-field>
                                         </v-col>
                                     </v-row>
                                     <br>
@@ -127,18 +127,18 @@
 
                                         <v-col cols="12" md="4">
                                             <v-text-field v-model="objAddressList.ADDRESS" label="Address" hide-details
-                                                @update:modelValue=test() required></v-text-field>
+                                                @update:modelValue=test() ></v-text-field>
                                         </v-col>
 
                                         <v-col cols="12" md="4">
                                             <v-text-field v-model="objAddressList.CITY" label="City/Town/Area"
-                                                hide-details required></v-text-field>
+                                                hide-details ></v-text-field>
                                         </v-col>
                                     </v-row>
                                     <v-row>
                                         <v-col cols="12" md="3">
                                             <v-text-field v-model="objAddressList.ZIP" label="Zip/Postal Code"
-                                                hide-details required></v-text-field>
+                                                hide-details v-on:keypress="[rules.isDecimal($event)]" ></v-text-field>
                                         </v-col>
 
                                         <v-col cols="12" md="3">
@@ -164,22 +164,22 @@
                                         <v-col cols="12" md="3">
                                             <v-autocomplete v-model="objAddressList.THANA" label="Thana"
                                                 item-value="THANA_ID" item-title="THANA_NM" :items="ThanaList"
-                                                @update:modelValue="ThanaGet(objAddressList.DISTRICT)"></v-autocomplete>
+                                                @update:modelValue="ThanaGet(objAddressList.DISTRICT)" ></v-autocomplete>
                                         </v-col>
 
                                         <v-col cols="12" md="3">
                                             <v-text-field v-model="objAddressList.PHONE_NO" label="Phone Number"
-                                                hide-details required></v-text-field>
+                                                hide-details v-on:keypress="[rules.isDecimal($event)]"></v-text-field>
                                         </v-col>
 
                                         <v-col cols="12" md="3">
                                             <v-text-field v-model="objAddressList.MOBILE_NO" label="Mobile Number"
-                                                hide-details required></v-text-field>
+                                                hide-details v-on:keypress="[rules.isDecimal($event)]"></v-text-field>
                                         </v-col>
 
                                         <v-col cols="12" md="3">
                                             <v-text-field v-model="objAddressList.EMAIL" label="Email" hide-details
-                                                required></v-text-field>
+                                                ></v-text-field>
                                         </v-col>
                                     </v-row>
                                     <br>
@@ -274,21 +274,68 @@ const headers = ref<any[]>([
 
 
 
-const items = [
-    {
-        AddressType: 'Account Holder',
-        Address: 'Mirpur'
-    }
-    // {  "player": "Stephen Curry", },
-    // { "championships": [2012, 2013, 2016, 2020], "player": "Lebron James", },
-    // { "championships": [2017, 2018], "player": "Kevin Durant", },
-    // { "championships": [2021], "player": "Giannis Antetokounmpo", }
-];
+// const items = [
+//     {
+//         AddressType: 'Account Holder',
+//         Address: 'Mirpur'
+//     }
+//     // {  "player": "Stephen Curry", },
+//     // { "championships": [2012, 2013, 2016, 2020], "player": "Lebron James", },
+//     // { "championships": [2017, 2018], "player": "Kevin Durant", },
+//     // { "championships": [2021], "player": "Giannis Antetokounmpo", }
+// ];
 
+// const nidRule = (value: string) => {
+//   return value.length >= 10 || 'NID must be at least 10 characters';
+// };
+
+const nidError = ref<string | null>(null);
+
+const validateNID = () => {
+  if (objCusInfo.NID.length < 10  ) {
+    nidError.value = 'NID must be 10 characters';
+  }
+  else if(objCusInfo.NID.length > 17){
+    nidError.value = 'NID not more than 17 characters';
+  }
+   else {
+    nidError.value = null;
+  }
+};
+
+
+
+const isFormValid = computed(() => {
+  // Perform validation logic here
+  const requiredFields = [
+    objCusInfo.CUSTOMER_NAME,
+    objCusInfo.FATHER_NAME,
+    objCusInfo.MOTHER_NAME,
+    objCusInfo.GENDER,
+    objCusInfo.DATE_OF_BIRTH,
+    objCusInfo.MARITAL_STATUS,
+    // objCusInfo.SPOUSE_NAME,
+    objCusInfo.NID,
+  
+  ];
+
+  return requiredFields.every(field => field);
+});
 
 const isSpouseNameDisabled = computed(() => objCusInfo.MARITAL_STATUS !== 'Married');
 
-Page_Load();
+
+ 
+
+
+async function onMaritalStatusChange() {
+  if (objCusInfo.MARITAL_STATUS == 'Unmarried') {
+    objCusInfo.SPOUSE_NAME = null;
+  }
+}
+
+
+Page_Load();    
 async function addAddress() {
     // debugger
     console.log('objAddressList on add button', objAddressList)
@@ -344,7 +391,7 @@ async function addAddress() {
     console.log('table Item: ', tableItems);
 
     console.log('table Item2: ', tableItems);
-    // isEditMode.value = false;
+    isEditMode.value = false;
     // editIndex.value = null; 
 }
 
@@ -494,6 +541,17 @@ async function OnSubmit() {
     //console.log(objCusInfo);
     // debugger;
 
+    if (!isFormValid.value) {
+    toast.error('Please fill in all required fields.');
+    return;
+  }
+
+  validateNID();
+  if (nidError.value) {
+    toast.error(nidError.value);
+    return;
+  }
+
     objCusInfo.INTRODUCER = { ...objIntroInfo };
     objCusInfo.ADDRESS = tableItems.value;
     objCusInfo.MAKE_BY = store.getters.getUserId;
@@ -507,6 +565,7 @@ async function OnSubmit() {
     await customer_service.customer_info_post(objCusInfo).then((res: any) => {
         if (res) {
             console.log('customer post response', res);
+            toast.success('successfully inserted data');
         }
     });
 
@@ -516,12 +575,13 @@ async function OnSubmit() {
     //     console.log('customer post response', res)
     // }
     // });
+    
 }
 
 async function CountryGet() {
     await customer_service.CountryGet().then((res: any) => {
         CountryList.value = res;
-        //console.log(CountryList.value);
+        // console.log(CountryList.value);
     });
 }
 async function Page_Load() {
